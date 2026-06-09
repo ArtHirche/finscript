@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finscript - Dashboard Financeiro</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome para ícones premium -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- ApexCharts CDN para gráficos interativos -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- CSS Customizado -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo"><i class="fa-solid fa-chart-line-up"></i></div>
+                <h1 class="brand-title">Finscript</h1>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard-tab">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="reports-tab">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Relatórios</span>
+                </button>
+                <button class="nav-item" data-tab="transactions-tab">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Lançamentos</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="excel-status">
+                    <i class="fa-regular fa-file-excel"></i>
+                    <div>
+                        <p class="status-title">Planilha Conectada</p>
+                        <p class="status-desc">Dashboard Ocimar 2023</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-info">
+                    <h2 id="tab-title">Dashboard Financeiro</h2>
+                    <p id="tab-subtitle">Visão geral do fluxo de caixa e despesas</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="open-add-modal-btn">
+                        <i class="fa-solid fa-plus"></i> Novo Lançamento
+                    </button>
+                </div>
+            </header>
+
+            <!-- TAB 1: DASHBOARD -->
+            <section id="dashboard-tab" class="tab-content active">
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card danger">
+                        <div class="kpi-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Contas Atrasadas</span>
+                            <h3 class="kpi-value" id="kpi-atrasadas">R$ 0,00</h3>
+                        </div>
+                    </div>
+                    <div class="kpi-card warning">
+                        <div class="kpi-icon"><i class="fa-solid fa-calendar-day"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Contas Vencendo Hoje</span>
+                            <h3 class="kpi-value" id="kpi-vencendo">R$ 0,00</h3>
+                        </div>
+                    </div>
+                    <div class="kpi-card success">
+                        <div class="kpi-icon"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Recebimentos Hoje</span>
+                            <h3 class="kpi-value" id="kpi-recebimentos-hoje">R$ 0,00</h3>
+                        </div>
+                    </div>
+                    <div class="kpi-card info">
+                        <div class="kpi-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Recebimentos Atrasados</span>
+                            <h3 class="kpi-value" id="kpi-recebimentos-atrasados">R$ 0,00</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos Principais -->
+                <div class="dashboard-grid">
+                    <!-- Fluxo de caixa mensal -->
+                    <div class="chart-card large">
+                        <div class="card-header">
+                            <h4 class="card-title">Fluxo de Caixa Mensal</h4>
+                            <p class="card-subtitle">Comparativo de entradas e saídas realizadas/previstas</p>
+                        </div>
+                        <div class="card-body">
+                            <div id="cashflow-chart"></div>
+                        </div>
+                    </div>
+
+                    <!-- TTGM / TTGA breakdown -->
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <div class="header-with-select">
+                                <h4 class="card-title">Gasto por Subgrupo</h4>
+                                <div class="select-group">
+                                    <select id="subgroup-period-select" class="form-select-sm">
+                                        <option value="monthly">Mensal</option>
+                                        <option value="annual">Anual</option>
+                                    </select>
+                                    <select id="subgroup-month-select" class="form-select-sm"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="subgroup-chart"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline de Projeção -->
+                <div class="dashboard-grid single">
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <h4 class="card-title">Projeção de Fluxo de Caixa Futuro</h4>
+                            <p class="card-subtitle">Cronograma previsto de créditos e débitos por data de vencimento</p>
+                        </div>
+                        <div class="card-body">
+                            <div id="projection-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: REPORTS -->
+            <section id="reports-tab" class="tab-content">
+                <div class="report-container">
+                    <div class="report-card">
+                        <div class="card-header">
+                            <h4 class="card-title">Balanço Financeiro por Conta</h4>
+                            <p class="card-subtitle">Crédito total (CT), Débito total (DT) e Saldo Total (ST) por conta ativa</p>
+                        </div>
+                        <div class="card-body no-padding">
+                            <div class="table-wrapper">
+                                <table class="table" id="reports-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Conta</th>
+                                            <th class="text-right">Crédito Total (CT)</th>
+                                            <th class="text-right">Débito Total (DT)</th>
+                                            <th class="text-right">Saldo Total (ST)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Renderizado dinamicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: TRANSACTIONS -->
+            <section id="transactions-tab" class="tab-content">
+                <div class="transactions-container">
+                    <!-- Filtros -->
+                    <div class="filter-bar">
+                        <div class="filter-inputs">
+                            <div class="input-icon-group">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="tx-search" placeholder="Buscar descrição...">
+                            </div>
+                            <select id="filter-conta" class="form-select">
+                                <option value="">Todas as Contas</option>
+                                <option value="Banco">Banco</option>
+                                <option value="Cédula">Cédula</option>
+                            </select>
+                            <select id="filter-status" class="form-select">
+                                <option value="">Todos os Status</option>
+                                <option value="Realizado">Realizado (Pago)</option>
+                                <option value="Previsto">Previsto (Pendente)</option>
+                            </select>
+                            <select id="filter-vencida" class="form-select">
+                                <option value="">Todos os Prazos</option>
+                                <option value="Vencida">Vencida</option>
+                                <option value="No prazo">No prazo</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" id="clear-filters-btn">Limpar Filtros</button>
+                    </div>
+
+                    <!-- Tabela de Transações -->
+                    <div class="report-card">
+                        <div class="card-body no-padding">
+                            <div class="table-wrapper">
+                                <table class="table" id="transactions-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Doc</th>
+                                            <th>Descrição</th>
+                                            <th>Vencimento</th>
+                                            <th>Pagamento</th>
+                                            <th>Parcela</th>
+                                            <th>Conta</th>
+                                            <th>Grupo / Subgrupo</th>
+                                            <th class="text-right">Valor</th>
+                                            <th>Status</th>
+                                            <th>Prazo</th>
+                                            <th class="text-center">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Renderizado dinamicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="table-footer">
+                                <span id="tx-count">Mostrando 0 lançamentos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL DE EDIÇÃO MÚLTIPLA (POP-UP) -->
+    <div class="modal-backdrop" id="add-modal">
+        <div class="modal-container large">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="modal-title-text">Lançamento de Transações</h3>
+                    <p class="modal-subtitle">Adicione ou edite múltiplos registros no Excel simultaneamente</p>
+                </div>
+                <button class="close-btn" id="close-modal-btn">&times;</button>
+            </div>
+            
+            <div class="modal-tabs">
+                <button class="modal-tab-btn active" data-modal-tab="form-mode-tab">
+                    <i class="fa-solid fa-table"></i> Modo Grid Visual
+                </button>
+                <button class="modal-tab-btn" data-modal-tab="bulk-mode-tab" id="bulk-tab-header">
+                    <i class="fa-solid fa-file-csv"></i> Modo Texto (CSV / Vírgula)
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- SUBTAB 1: FORM/GRID MODE -->
+                <div class="modal-tab-content active" id="form-mode-tab">
+                    <div class="table-wrapper overflow-visible">
+                        <table class="grid-table" id="modal-grid-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 7%;">Doc</th>
+                                    <th style="width: 20%;">Descrição</th>
+                                    <th style="width: 11%;">Vencimento</th>
+                                    <th style="width: 6%; text-align: center;">Pago?</th>
+                                    <th style="width: 11%;">Pagamento</th>
+                                    <th style="width: 6%;">Parcela</th>
+                                    <th style="width: 10%;">Valor</th>
+                                    <th style="width: 8%;">Tipo</th>
+                                    <th style="width: 9%;">Conta</th>
+                                    <th style="width: 15%;">Grupo e Subgrupo</th>
+                                    <th style="width: 5%;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="modal-grid-body">
+                                <!-- Linhas inseridas via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="btn btn-add-row" id="add-grid-row-btn">
+                        <i class="fa-solid fa-plus"></i> Adicionar Mais Uma Linha
+                    </button>
+                </div>
+
+                <!-- SUBTAB 2: BULK TEXT/CSV MODE -->
+                <div class="modal-tab-content" id="bulk-mode-tab">
+                    <div class="bulk-instructions">
+                        <h5>Como importar dados separados por vírgula:</h5>
+                        <p>Cole ou digite os lançamentos no campo abaixo. Use uma linha por lançamento com os seguintes valores separados por vírgula:</p>
+                        <code>Nº Doc, Descrição, Data Vencimento, Pago (S/N), Conta, Grupo, Subgrupo, Valor, Tipo (Entrada/Saída)</code>
+                        <div class="example-box">
+                            <strong>Exemplo de colagem:</strong><br>
+                            <code>101, Venda de Equipamento, 2026-06-12, S, Banco, RECEITAS_OPERACIONAIS, Receitas de Vendas, 3200.00, Entrada</code><br>
+                            <code>102, Alimentação Almoço, 2026-06-13, N, Cédula, DESPESAS_OPERACIONAIS, Alimentação, 45.50, Saída</code>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bulk-text" class="form-label">Lançamentos em Lote (CSV)</label>
+                        <textarea id="bulk-text" rows="8" placeholder="Cole suas linhas aqui..."></textarea>
+                    </div>
+                    
+                    <button class="btn btn-secondary" id="parse-bulk-btn">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Processar e Carregar no Grid
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div class="footer-status-text" id="modal-status-msg"></div>
+                <div class="footer-buttons">
+                    <button class="btn btn-secondary" id="cancel-modal-btn">Cancelar</button>
+                    <button class="btn btn-primary" id="save-modal-btn">
+                        <i class="fa-regular fa-floppy-disk"></i> Gravar Transações no Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Customizado -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
