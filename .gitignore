@@ -1,0 +1,16 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Excel temporary / test files (we keep the main template Dashboard Ocimar 2023.xlsx)
+*diagnostic*.xlsx
+*test*.xlsx
+~$*.xlsx
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
