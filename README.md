@@ -1,8 +1,8 @@
 # Finscript - Dashboard Financeiro e Gerenciador de Transações Excel
 
-Finscript é uma aplicação web local de alto padrão desenvolvida em Python (Flask) e tecnologias front-end modernas (HTML5, Vanilla CSS com glassmorphic dark mode, Vanilla JS e ApexCharts). O projeto funciona como uma interface rica para ler, analisar e inserir transações no arquivo Excel `Dashboard Ocimar 2023.xlsx` sem corromper suas fórmulas originais ou estrutura nativa.
+Finscript é uma aplicação web local de alto padrão desenvolvida em Python (Flask) e tecnologias front-end modernas (HTML5, Vanilla CSS com glassmorphic dark mode, Vanilla JS e ApexCharts). O projeto funciona como uma interface rica para ler, analisar e inserir transações no arquivo Excel `Dashboard.xlsx` sem corromper suas fórmulas originais ou estrutura nativa.
 
-## 🚀 Funcionalidades
+## Funcionalidades
 
 - **Dashboard Financeiro Premium**:
   - Indicadores superiores (contas vencendo hoje, atrasadas, recebimentos vencendo hoje e recebimentos atrasados).
@@ -19,7 +19,7 @@ Finscript é uma aplicação web local de alto padrão desenvolvida em Python (F
 - **Integração Excel Segura**:
   - Salva e lê dados diretamente do arquivo Excel sem sobrescrever ou desconfigurar as fórmulas e pivot tables nativas da planilha original.
 
-## 📂 Estrutura do Projeto
+## Estrutura do Projeto
 
 A estrutura segue padrões modernos de desenvolvimento de mercado:
 
@@ -49,7 +49,7 @@ finscript/
 └── run.bat                # Script de inicialização automática no Windows
 ```
 
-## 🛠️ Instalação e Execução
+## Instalação e Execução
 
 ### Pré-requisitos
 - Python 3.10 ou superior instalado no sistema.
@@ -71,7 +71,7 @@ Apenas dê dois cliques no arquivo `run.bat` na raiz do projeto. O script irá:
    ```
 3. Abra o navegador em `http://127.0.0.1:5000`.
 
-## 🧪 Testes Automatizados
+## Testes Automatizados
 
 Os testes do projeto utilizam o `pytest` e criam cópias temporárias da planilha de produção para garantir que os dados não sejam afetados durante os testes.
 
@@ -80,6 +80,6 @@ Para rodar todos os testes automatizados:
 python -m pytest
 ```
 
-## ⚖️ Licença
+## Licença
 
 Este projeto está licenciado sob a licença MIT - consulte o arquivo [LICENSE](LICENSE) para obter mais detalhes.
